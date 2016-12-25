@@ -65,11 +65,8 @@ public class SimpleMessageProtocol extends STPObject {
 	public static Command parse(final Message message) {
 		try {
 			final String string = new String(message.getPayload().getContent(), "UTF-8");
-			
 			final String[] fragments = string.split("(?<!\\\\);");
-			
 			final String name = fragments[0];
-			
 			final List<String> values = new ArrayList<>();
 			
 			if (fragments.length > 1) {

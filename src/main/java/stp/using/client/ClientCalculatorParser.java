@@ -16,7 +16,6 @@ public final class ClientCalculatorParser extends Parser {
 	
 	private Payload generatePayload(final String expression, final String operator) {
 		final String[] numbers = expression.split("\\" + operator);
-		
 		final String content = operator + ";" + numbers[0] + ";" + numbers[1];
 		
 		final Payload payload = new Payload();
