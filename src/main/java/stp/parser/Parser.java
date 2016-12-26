@@ -6,6 +6,10 @@ import stp.system.STPObject;
 
 public abstract class Parser extends STPObject {
 	
+	protected Parser() {
+		
+	}
+	
 	protected ParserManager getParserManager() {
 		return ParserManager.getInstance();
 	}
