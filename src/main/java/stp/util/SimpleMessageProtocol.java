@@ -3,6 +3,7 @@ package stp.util;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import stp.message.Message;
 import stp.message.Payload;
@@ -11,12 +12,22 @@ import stp.system.STPObject;
 public class SimpleMessageProtocol extends STPObject {
 	
 	public static class Command {
+		private String id;
 		private String name;
 		private String[] values;
 		
 		public Command(final String name, final String... values) {
+			this(null, name, values);
+		}
+		
+		public Command(final String id, final String name, final String... values) {
+			this.id = id == null ? UUID.randomUUID().toString() : id;
 			this.name = name;
 			this.values = values;
+		}
+		
+		public String getId() {
+			return id;
 		}
 		
 		public String getName() {
