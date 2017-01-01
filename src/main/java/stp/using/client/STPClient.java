@@ -59,7 +59,7 @@ public class STPClient {
 				// Request for RepeaterParser
 				// message.setType(clientRepeaterParser.getType());
 				
-				peer.getTransporter().send(message);
+				peer.getTransporter().sendAsync(message);
 			} while (scanner.hasNext());
 			
 			scanner.close();

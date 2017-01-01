@@ -154,7 +154,7 @@ public class Transporter extends STPObject {
 		}
 	}
 	
-	public void send(final Message message) throws STPException {
+	public void sendAsync(final Message message) throws STPException {
 		try {
 			sendMessageQueue.put(message);
 		} catch (final InterruptedException exception) {
@@ -162,22 +162,22 @@ public class Transporter extends STPObject {
 		}
 	}
 	
-	public void sendSync(Message message) throws STPException {
+	public synchronized void sendSync(final Message message) throws STPException {
 		try {
 			STPLogger.info(STPConstants.TRANSPORT_PREPARING_TO_SEND_MESSAGE);
 			
-			message = ParserManager.getInstance().prepareWriting(message);
+			final Message newMessage = ParserManager.getInstance().prepareWriting(message);
 			
-			if (message != null) {
-				sendingMessage = message;
+			if (newMessage != null) {
+				sendingMessage = newMessage;
 				
-				validate(message);
+				validate(newMessage);
 				
-				write(message.toBytes());
+				write(newMessage.toBytes());
 				
 				STPLogger.info(STPConstants.TRANSPORT_MESSAGE_SENT);
 				
-				ParserManager.getInstance().written(peer, message);
+				ParserManager.getInstance().written(peer, newMessage);
 				
 				sendingMessage = null;
 			} else {

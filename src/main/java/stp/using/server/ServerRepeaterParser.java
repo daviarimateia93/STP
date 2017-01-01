@@ -12,7 +12,7 @@ public class ServerRepeaterParser extends Parser {
 	@Override
 	protected void read(final Peer peer, final Message message) {
 		try {
-			peer.getTransporter().send(message);
+			peer.getTransporter().sendAsync(message);
 		} catch (final STPException exception) {
 			System.out.println("EXCEPTION");
 			System.out.println(exception.getCode() + ": " + exception.getMessage());

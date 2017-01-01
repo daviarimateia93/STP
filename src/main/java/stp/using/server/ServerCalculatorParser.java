@@ -74,7 +74,7 @@ public class ServerCalculatorParser extends Parser {
 			
 			message.setPayload(payload);
 			
-			peer.getTransporter().send(message);
+			peer.getTransporter().sendAsync(message);
 		} catch (final STPException exception) {
 			System.out.println("EXCEPTION");
 			System.out.println(exception.getCode() + ": " + exception.getMessage());
