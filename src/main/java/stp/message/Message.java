@@ -20,7 +20,7 @@ public class Message extends STPObject {
 	
 	public Message(final String type, final String id, final Payload payload) {
 		tag = STPConstants.MSG_TAG;
-		this.id = id == null ? generateId() : null;
+		this.id = id == null ? generateId() : id;
 		this.type = type;
 		this.payload = payload;
 	}
