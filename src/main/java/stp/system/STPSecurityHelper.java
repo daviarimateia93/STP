@@ -18,7 +18,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-public class STPSecurityHelper {
+public abstract class STPSecurityHelper {
+	
+	protected STPSecurityHelper() {
+		
+	}
 	
 	private static final String CERTIFICATE_TYPE = "X.509";
 	private static final String SSL_PROTOCOL_TLS = "TLS";

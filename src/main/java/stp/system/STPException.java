@@ -1,7 +1,8 @@
 package stp.system;
 
-@SuppressWarnings("serial")
 public class STPException extends Exception {
+	
+	private static final long serialVersionUID = -602084367629893802L;
 	
 	private final int code;
 	private final String message;

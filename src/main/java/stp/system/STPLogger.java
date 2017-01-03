@@ -3,7 +3,11 @@ package stp.system;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class STPLogger {
+public abstract class STPLogger {
+	
+	protected STPLogger() {
+		
+	}
 	
 	public static boolean on = true;
 	

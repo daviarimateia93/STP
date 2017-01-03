@@ -1,6 +1,10 @@
 package stp.system;
 
-public class STPConstants {
+public abstract class STPConstants {
+	
+	protected STPConstants() {
+		
+	}
 	
 	public static final int EXCEPTION_CODE_GENERAL_EXCEPTION = 0;
 	
