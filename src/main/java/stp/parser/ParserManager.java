@@ -73,6 +73,17 @@ public class ParserManager extends STPObject {
 		parsersServerKnown.clear();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T extends Parser> T get(final Class<T> parserClass) {
+		for (final Map.Entry<String, Parser> entry : parsers.entrySet()) {
+			if (entry.getValue().getClass().equals(parserClass)) {
+				return (T) entry.getValue();
+			}
+		}
+		
+		return null;
+	}
+	
 	public Parser get(final String type) {
 		return parsers.get(type);
 	}
