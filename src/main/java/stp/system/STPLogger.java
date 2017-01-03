@@ -1,5 +1,8 @@
 package stp.system;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class STPLogger {
 	
 	public static boolean on = true;
@@ -39,9 +42,7 @@ public class STPLogger {
 		println("Code: " + exception.getCode());
 		println("Message: " + exception.getMessage());
 		
-		for (StackTraceElement stackTrace : exception.getStackTrace()) {
-			println(stackTrace);
-		}
+		println(getStackTraceAsString(exception));
 		
 		printSeparator();
 	}
@@ -52,9 +53,7 @@ public class STPLogger {
 		println("STPLog: exception occurred");
 		println("Message: " + exception.getMessage());
 		
-		for (StackTraceElement stackTrace : exception.getStackTrace()) {
-			println(stackTrace);
-		}
+		println(getStackTraceAsString(exception));
 		
 		printSeparator();
 	}
@@ -64,7 +63,7 @@ public class STPLogger {
 		
 		println("STPLog: printing a byte array");
 		
-		for (byte b : array) {
+		for (final byte b : array) {
 			println(b);
 		}
 		
@@ -78,7 +77,7 @@ public class STPLogger {
 		
 		println("STPLog: printing a byte array");
 		
-		for (byte b : array) {
+		for (final byte b : array) {
 			print((char) b);
 		}
 		
@@ -105,5 +104,14 @@ public class STPLogger {
 		println(error);
 		
 		printSeparator();
+	}
+	
+	private static String getStackTraceAsString(final Throwable throwable) {
+		final StringWriter stringWriter = new StringWriter();
+		final PrintWriter printWriter = new PrintWriter(stringWriter);
+		
+		throwable.printStackTrace(printWriter);
+		
+		return stringWriter.toString();
 	}
 }
