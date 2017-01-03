@@ -150,7 +150,7 @@ public class Transporter extends STPObject {
 		} catch (final Exception exception) {
 			peer.end();
 			
-			throw new STPException(STPConstants.EXCEPTION_CODE_GENERAL_EXCEPTION, exception.getMessage());
+			throw new STPException(exception);
 		}
 	}
 	

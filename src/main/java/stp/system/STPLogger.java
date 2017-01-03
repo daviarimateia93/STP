@@ -1,8 +1,5 @@
 package stp.system;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public abstract class STPLogger {
 	
 	protected STPLogger() {
@@ -46,7 +43,7 @@ public abstract class STPLogger {
 		println("Code: " + exception.getCode());
 		println("Message: " + exception.getMessage());
 		
-		println(getStackTraceAsString(exception));
+		println(ExceptionHelper.getStackTraceAsString(exception));
 		
 		printSeparator();
 	}
@@ -57,7 +54,7 @@ public abstract class STPLogger {
 		println("STPLog: exception occurred");
 		println("Message: " + exception.getMessage());
 		
-		println(getStackTraceAsString(exception));
+		println(ExceptionHelper.getStackTraceAsString(exception));
 		
 		printSeparator();
 	}
@@ -108,14 +105,5 @@ public abstract class STPLogger {
 		println(error);
 		
 		printSeparator();
-	}
-	
-	private static String getStackTraceAsString(final Throwable throwable) {
-		final StringWriter stringWriter = new StringWriter();
-		final PrintWriter printWriter = new PrintWriter(stringWriter);
-		
-		throwable.printStackTrace(printWriter);
-		
-		return stringWriter.toString();
 	}
 }

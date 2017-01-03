@@ -18,6 +18,13 @@ public class STPException extends Exception {
 		this.message = message;
 	}
 	
+	public STPException(final Throwable throwable) {
+		super(throwable);
+		
+		this.code = STPConstants.EXCEPTION_CODE_GENERAL_EXCEPTION;
+		this.message = ExceptionHelper.getStackTraceAsString(throwable);
+	}
+	
 	public int getCode() {
 		return code;
 	}
