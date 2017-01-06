@@ -22,7 +22,7 @@ public class STPException extends Exception {
 		super(throwable);
 		
 		this.code = STPConstants.EXCEPTION_CODE_GENERAL_EXCEPTION;
-		this.message = ExceptionHelper.getStackTraceAsString(throwable);
+		this.message = STPExceptionHelper.getStackTraceAsString(throwable);
 	}
 	
 	public int getCode() {

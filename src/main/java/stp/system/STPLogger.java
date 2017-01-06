@@ -43,7 +43,7 @@ public abstract class STPLogger {
 		println("Code: " + exception.getCode());
 		println("Message: " + exception.getMessage());
 		
-		println(ExceptionHelper.getStackTraceAsString(exception));
+		println(STPExceptionHelper.getStackTraceAsString(exception));
 		
 		printSeparator();
 	}
@@ -54,7 +54,7 @@ public abstract class STPLogger {
 		println("STPLog: exception occurred");
 		println("Message: " + exception.getMessage());
 		
-		println(ExceptionHelper.getStackTraceAsString(exception));
+		println(STPExceptionHelper.getStackTraceAsString(exception));
 		
 		printSeparator();
 	}
