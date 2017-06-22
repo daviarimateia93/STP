@@ -91,9 +91,9 @@ public class Transporter extends STPObject {
 			
 			final String type = header[STPConstants.STP_HEADER_INDEX_TYPE];
 			final String id = header[STPConstants.STP_HEADER_INDEX_ID];
-			final long payloadPosition = Long.valueOf(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_POSITION]);
-			final int payloadContentLength = Integer.valueOf(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_CONTENT_LENGTH]);
-			final long payloadTotalLength = Long.valueOf(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_TOTAL_LENGTH]);
+			final long payloadPosition = Long.parseLong(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_POSITION]);
+			final int payloadContentLength = Integer.parseInt(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_CONTENT_LENGTH]);
+			final long payloadTotalLength = Long.parseLong(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_TOTAL_LENGTH]);
 			
 			final byte[] payloadContent = receiveContent(payloadContentLength);
 			
@@ -311,9 +311,7 @@ public class Transporter extends STPObject {
 	private String[] splitHeader(final String header) throws STPException {
 		validateHeader(header);
 		
-		final String[] headerPieces = header.split(" ");
-		
-		return headerPieces;
+		return header.split(" ");
 	}
 	
 	public static void validate(final Message message) throws STPException {
