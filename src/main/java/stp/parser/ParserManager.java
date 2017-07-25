@@ -53,6 +53,7 @@ public class ParserManager extends STPObject {
 		}
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public void remove(final Parser parser) {
 		final Parser removedParser = parsers.remove(parser.getType());
 		
