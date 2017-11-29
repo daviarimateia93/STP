@@ -2,14 +2,17 @@ package stp.using.client;
 
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.message.Payload;
 import stp.parser.ParserManager;
 import stp.system.STPException;
-import stp.system.STPLogger;
 
 public class STPClient {
+	
+	private static final Logger logger = Logger.getLogger(STPClient.class);
 	
 	public static final String DEFAULT_ADDRESS = "localhost";
 	public static final int DEFAULT_PORT = 8888;
@@ -18,16 +21,10 @@ public class STPClient {
 		String address = DEFAULT_ADDRESS;
 		int port = DEFAULT_PORT;
 		
-		if (args != null) {
-			if (args.length == 2) {
-				address = args[0];
-				port = Integer.valueOf(args[1]);
-			}
+		if (args != null && args.length == 2) {
+			address = args[0];
+			port = Integer.valueOf(args[1]);
 		}
-		
-		STPLogger.welcomeSTP();
-		
-		STPLogger.on = false;
 		
 		try {
 			final ClientRepeaterParser clientRepeaterParser = new ClientRepeaterParser();
@@ -64,7 +61,7 @@ public class STPClient {
 			
 			scanner.close();
 		} catch (final STPException exception) {
-			STPLogger.exception(exception);
+			logger.error(exception);
 		}
 	}
 }

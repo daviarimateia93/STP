@@ -7,16 +7,19 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
+
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.message.Payload;
 import stp.parser.ParserManager;
 import stp.system.STPConstants;
 import stp.system.STPException;
-import stp.system.STPLogger;
 import stp.system.STPObject;
 
 public class Transporter extends STPObject {
+	
+	private static final Logger logger = Logger.getLogger(Transporter.class);
 	
 	private Peer peer;
 	private Socket socket;
@@ -59,7 +62,7 @@ public class Transporter extends STPObject {
 					try {
 						receive();
 					} catch (final STPException exception) {
-						STPLogger.exception(exception);
+						logger.error(exception);
 						
 						break;
 					}
@@ -75,7 +78,7 @@ public class Transporter extends STPObject {
 				try {
 					send();
 				} catch (final STPException exception) {
-					STPLogger.exception(exception);
+					logger.error(exception);
 				}
 			}
 		};
@@ -85,7 +88,7 @@ public class Transporter extends STPObject {
 	
 	public void receive() throws STPException {
 		try {
-			STPLogger.info(STPConstants.TRANSPORT_PREPARING_TO_READ_MESSAGE);
+			logger.info(STPConstants.TRANSPORT_PREPARING_TO_READ_MESSAGE);
 			
 			final String[] header = receiveHeader();
 			
@@ -109,42 +112,42 @@ public class Transporter extends STPObject {
 				
 				validate(message);
 				
-				STPLogger.info(STPConstants.TRANSPORT_MESSAGE_READ);
+				logger.info(STPConstants.TRANSPORT_MESSAGE_READ);
 				
 				ParserManager.getInstance().read(peer, message);
 				
 				receivingMessage = null;
 			} else {
-				STPLogger.info(STPConstants.TRANSPORT_MESSAGE_IGNORED);
+				logger.info(STPConstants.TRANSPORT_MESSAGE_IGNORED);
 			}
 		} catch (final STPException exception) {
 			switch (exception.getCode()) {
-				case STPConstants.EXCEPTION_CODE_INPUTSTREAM_EXCEPTION:
+				case STPException.EXCEPTION_CODE_INPUTSTREAM_EXCEPTION:
 				
-				case STPConstants.EXCEPTION_CODE_HEADER_INVALID_FORMAT:
-				case STPConstants.EXCEPTION_CODE_TRAILER_INVALID_CONTENT:
+				case STPException.EXCEPTION_CODE_HEADER_INVALID_FORMAT:
+				case STPException.EXCEPTION_CODE_TRAILER_INVALID_CONTENT:
 				
-				case STPConstants.EXCEPTION_CODE_OBJECT_NULL_MESSAGE:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_INVALID_ID:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_NULL_TYPE:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_EMPTY_TYPE:
+				case STPException.EXCEPTION_CODE_OBJECT_NULL_MESSAGE:
+				case STPException.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD:
+				case STPException.EXCEPTION_CODE_MESSAGE_INVALID_ID:
+				case STPException.EXCEPTION_CODE_MESSAGE_NULL_TYPE:
+				case STPException.EXCEPTION_CODE_MESSAGE_EMPTY_TYPE:
 				
-				case STPConstants.EXCEPTION_CODE_OBJECT_NULL_PAYLOAD:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_NULL_CONTENT:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH_MATCH:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_OVERLOADED:
+				case STPException.EXCEPTION_CODE_OBJECT_NULL_PAYLOAD:
+				case STPException.EXCEPTION_CODE_PAYLOAD_NULL_CONTENT:
+				case STPException.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION:
+				case STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH:
+				case STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH_MATCH:
+				case STPException.EXCEPTION_CODE_PAYLOAD_OVERLOADED:
 				
-				case STPConstants.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE:
+				case STPException.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE:
 				
 				default: {
-					STPLogger.exception(exception);
+					logger.error(exception);
 					
 					peer.end();
 					
-					throw new STPException(STPConstants.EXCEPTION_CODE_PEER_CONNECTION_CLOSED, STPConstants.EXCEPTION_STR_PEER_CONNECTION_CLOSED);
+					throw new STPException(STPException.EXCEPTION_CODE_PEER_CONNECTION_CLOSED);
 				}
 			}
 		} catch (final Exception exception) {
@@ -158,13 +161,15 @@ public class Transporter extends STPObject {
 		try {
 			sendMessageQueue.put(message);
 		} catch (final InterruptedException exception) {
+			logger.error(exception);
 			
+			Thread.currentThread().interrupt();
 		}
 	}
 	
 	public synchronized void sendSync(final Message message) throws STPException {
 		try {
-			STPLogger.info(STPConstants.TRANSPORT_PREPARING_TO_SEND_MESSAGE);
+			logger.info(STPConstants.TRANSPORT_PREPARING_TO_SEND_MESSAGE);
 			
 			final Message newMessage = ParserManager.getInstance().prepareWriting(message);
 			
@@ -175,47 +180,47 @@ public class Transporter extends STPObject {
 				
 				write(newMessage.toBytes());
 				
-				STPLogger.info(STPConstants.TRANSPORT_MESSAGE_SENT);
+				logger.info(STPConstants.TRANSPORT_MESSAGE_SENT);
 				
 				ParserManager.getInstance().written(peer, newMessage);
 				
 				sendingMessage = null;
 			} else {
-				STPLogger.info(STPConstants.TRANSPORT_MESSAGE_IGNORED);
+				logger.info(STPConstants.TRANSPORT_MESSAGE_IGNORED);
 			}
 		} catch (final STPException exception) {
 			switch (exception.getCode()) {
-				case STPConstants.EXCEPTION_CODE_HEADER_INVALID_FORMAT:
+				case STPException.EXCEPTION_CODE_HEADER_INVALID_FORMAT:
 				
-				case STPConstants.EXCEPTION_CODE_OUTPUTSTREAM_EXCEPTION:
+				case STPException.EXCEPTION_CODE_OUTPUTSTREAM_EXCEPTION:
 				
-				case STPConstants.EXCEPTION_CODE_OBJECT_NULL_MESSAGE:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_INVALID_ID:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_NULL_TYPE:
-				case STPConstants.EXCEPTION_CODE_MESSAGE_EMPTY_TYPE:
+				case STPException.EXCEPTION_CODE_OBJECT_NULL_MESSAGE:
+				case STPException.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD:
+				case STPException.EXCEPTION_CODE_MESSAGE_INVALID_ID:
+				case STPException.EXCEPTION_CODE_MESSAGE_NULL_TYPE:
+				case STPException.EXCEPTION_CODE_MESSAGE_EMPTY_TYPE:
 				
-				case STPConstants.EXCEPTION_CODE_OBJECT_NULL_PAYLOAD:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_NULL_CONTENT:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH_MATCH:
-				case STPConstants.EXCEPTION_CODE_PAYLOAD_OVERLOADED:
+				case STPException.EXCEPTION_CODE_OBJECT_NULL_PAYLOAD:
+				case STPException.EXCEPTION_CODE_PAYLOAD_NULL_CONTENT:
+				case STPException.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION:
+				case STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH:
+				case STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH_MATCH:
+				case STPException.EXCEPTION_CODE_PAYLOAD_OVERLOADED:
 				
-				case STPConstants.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE:
+				case STPException.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE:
 				
 				default: {
-					STPLogger.exception(exception);
+					logger.error(exception);
 					
 					peer.end();
 					
-					throw new STPException(STPConstants.EXCEPTION_CODE_PEER_CONNECTION_CLOSED, STPConstants.EXCEPTION_STR_PEER_CONNECTION_CLOSED);
+					throw new STPException(STPException.EXCEPTION_CODE_PEER_CONNECTION_CLOSED);
 				}
 			}
 		} catch (final Exception exception) {
 			peer.end();
 			
-			throw new STPException(STPConstants.EXCEPTION_CODE_GENERAL_EXCEPTION, exception.getMessage());
+			throw new STPException(exception);
 		}
 	}
 	
@@ -227,7 +232,9 @@ public class Transporter extends STPObject {
 				sendSync(message);
 			}
 		} catch (final InterruptedException exception) {
+			logger.error(exception);
 			
+			Thread.currentThread().interrupt();
 		}
 	}
 	
@@ -235,7 +242,7 @@ public class Transporter extends STPObject {
 		try {
 			return socket.getInputStream().read();
 		} catch (final IOException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_INPUTSTREAM_EXCEPTION, exception.getMessage());
+			throw new STPException(STPException.EXCEPTION_CODE_INPUTSTREAM_EXCEPTION, exception);
 		}
 	}
 	
@@ -243,7 +250,7 @@ public class Transporter extends STPObject {
 		try {
 			return socket.getInputStream().read(bytes, off, len);
 		} catch (final IOException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_INPUTSTREAM_EXCEPTION, exception.getMessage());
+			throw new STPException(STPException.EXCEPTION_CODE_INPUTSTREAM_EXCEPTION, exception);
 		}
 	}
 	
@@ -251,7 +258,7 @@ public class Transporter extends STPObject {
 		try {
 			socket.getOutputStream().write(bytes);
 		} catch (final IOException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_OUTPUTSTREAM_EXCEPTION, exception.getMessage());
+			throw new STPException(STPException.EXCEPTION_CODE_OUTPUTSTREAM_EXCEPTION, exception);
 		}
 	}
 	
@@ -266,7 +273,7 @@ public class Transporter extends STPObject {
 			readByte = (byte) read();
 			
 			if (readByte == -1) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_PEER_CONNECTION_CLOSED, STPConstants.EXCEPTION_STR_PEER_CONNECTION_CLOSED);
+				throw new STPException(STPException.EXCEPTION_CODE_PEER_CONNECTION_CLOSED);
 			}
 			
 			header += (char) readByte;
@@ -285,7 +292,7 @@ public class Transporter extends STPObject {
 			total += receive;
 			
 			if (receive == -1) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_PEER_CONNECTION_CLOSED, STPConstants.EXCEPTION_STR_PEER_CONNECTION_CLOSED);
+				throw new STPException(STPException.EXCEPTION_CODE_PEER_CONNECTION_CLOSED);
 			}
 		} while (receive > 0);
 		
@@ -298,12 +305,12 @@ public class Transporter extends STPObject {
 		final int readSize = read(trailer, 0, STPConstants.STP_TRAILER.length);
 		
 		if (readSize == -1) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PEER_CONNECTION_CLOSED, STPConstants.EXCEPTION_STR_PEER_CONNECTION_CLOSED);
+			throw new STPException(STPException.EXCEPTION_CODE_PEER_CONNECTION_CLOSED);
 		}
 		
 		for (int i = 0; i < STPConstants.STP_TRAILER.length; i++) {
 			if (trailer[i] != STPConstants.STP_TRAILER[i]) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_TRAILER_INVALID_CONTENT, STPConstants.EXCEPTION_STR_TRAILER_INVALID_CONTENT);
+				throw new STPException(STPException.EXCEPTION_CODE_TRAILER_INVALID_CONTENT);
 			}
 		}
 	}
@@ -324,49 +331,49 @@ public class Transporter extends STPObject {
 	
 	private static void validateMessage(final Message message) throws STPException {
 		if (message == null) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_OBJECT_NULL_MESSAGE, STPConstants.EXCEPTION_STR_OBJECT_NULL_MESSAGE);
+			throw new STPException(STPException.EXCEPTION_CODE_OBJECT_NULL_MESSAGE);
 		}
 		
 		if (message.getPayload() == null) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD, STPConstants.EXCEPTION_STR_MESSAGE_NULL_PAYLOAD);
+			throw new STPException(STPException.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD);
 		}
 		
 		if (message.getId().length() != STPConstants.MSG_ID_LENGTH) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_MESSAGE_INVALID_ID, STPConstants.EXCEPTION_STR_MESSAGE_INVALID_ID);
+			throw new STPException(STPException.EXCEPTION_CODE_MESSAGE_INVALID_ID);
 		}
 		
 		if (message.getType() == null) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_MESSAGE_NULL_TYPE, STPConstants.EXCEPTION_STR_MESSAGE_NULL_TYPE);
+			throw new STPException(STPException.EXCEPTION_CODE_MESSAGE_NULL_TYPE);
 		}
 		
 		if (message.getType().isEmpty()) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_MESSAGE_EMPTY_TYPE, STPConstants.EXCEPTION_STR_MESSAGE_EMPTY_TYPE);
+			throw new STPException(STPException.EXCEPTION_CODE_MESSAGE_EMPTY_TYPE);
 		}
 	}
 	
 	private static void validatePayload(final Payload payload) throws STPException {
 		if (payload == null) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_OBJECT_NULL_PAYLOAD, STPConstants.EXCEPTION_STR_OBJECT_NULL_PAYLOAD);
+			throw new STPException(STPException.EXCEPTION_CODE_OBJECT_NULL_PAYLOAD);
 		}
 		
 		if (payload.getContent() == null) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PAYLOAD_NULL_CONTENT, STPConstants.EXCEPTION_STR_PAYLOAD_NULL_CONTENT);
+			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_NULL_CONTENT);
 		}
 		
 		if (payload.getPosition() < 0) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION, STPConstants.EXCEPTION_STR_PAYLOAD_INVALID_POSITION);
+			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION);
 		}
 		
 		if (payload.getLength() < 0 || payload.getLength() > STPConstants.PAYLOAD_MAX_SIZE || payload.getTotalLength() > STPConstants.PAYLOAD_MAX_SIZE) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH, STPConstants.EXCEPTION_STR_PAYLOAD_INVALID_LENGTH);
+			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH);
 		}
 		
 		if (payload.getLength() != payload.getContent().length) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH_MATCH, STPConstants.EXCEPTION_STR_PAYLOAD_INVALID_LENGTH_MATCH);
+			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH_MATCH);
 		}
 		
 		if (payload.getPosition() + payload.getLength() > payload.getTotalLength()) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PAYLOAD_OVERLOADED, STPConstants.EXCEPTION_STR_PAYLOAD_OVERLOADED);
+			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_OVERLOADED);
 		}
 	}
 	
@@ -382,7 +389,7 @@ public class Transporter extends STPObject {
 		}
 		
 		if (headerPieces.length != piecesQuantity || piecesQuantity != STPConstants.STP_HEADER_PIECES_LENGTH) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_HEADER_INVALID_FORMAT, STPConstants.EXCEPTION_STR_HEADER_INVALID_FORMAT);
+			throw new STPException(STPException.EXCEPTION_CODE_HEADER_INVALID_FORMAT);
 		}
 	}
 }

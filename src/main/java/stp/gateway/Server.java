@@ -5,28 +5,28 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
+import org.apache.log4j.Logger;
+
 import stp.parser.ParserManager;
 import stp.system.STPConstants;
 import stp.system.STPException;
-import stp.system.STPLogger;
 import stp.system.STPObject;
 import stp.system.STPSecurityHelper;
 
 public class Server extends STPObject {
 	
+	private static final Logger logger = Logger.getLogger(Server.class);
+	
 	private ServerSocket serverSocket;
 	private final ArrayList<Peer> connectedPeers = new ArrayList<>();
 	private boolean started;
 	
-	public Server() {
-		
-	}
-	
-	public ArrayList<Peer> getConnectedPeers() {
+	public List<Peer> getConnectedPeers() {
 		return connectedPeers;
 	}
 	
@@ -53,7 +53,7 @@ public class Server extends STPObject {
 				
 				started = true;
 				
-				STPLogger.info(STPConstants.SERVER_HAS_BEEN_STARTED);
+				logger.info(STPConstants.SERVER_HAS_BEEN_STARTED);
 				
 				ParserManager.getInstance().onServerStart(this);
 				
@@ -65,9 +65,9 @@ public class Server extends STPObject {
 					new Peer(socket, this);
 				}
 			} catch (final IOException exception) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_SOCKET_EXCEPTION, exception.getMessage());
+				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
 			} catch (final STPException exception) {
-				STPLogger.exception(exception);
+				logger.error(exception);
 				
 				throw exception;
 			}
@@ -87,13 +87,13 @@ public class Server extends STPObject {
 			try {
 				serverSocket.close();
 			} catch (final IOException exception) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_SOCKET_EXCEPTION, exception.getMessage());
+				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
 			} catch (final Exception exception) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_GENERAL_EXCEPTION, exception.getMessage());
+				throw new STPException(exception);
 			} finally {
 				started = false;
 				
-				STPLogger.info(STPConstants.SERVER_HAS_BEEN_ENDED);
+				logger.info(STPConstants.SERVER_HAS_BEEN_ENDED);
 				
 				ParserManager.getInstance().onServerEnd(this);
 				

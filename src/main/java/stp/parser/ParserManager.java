@@ -8,7 +8,6 @@ import java.util.Map;
 import stp.gateway.Peer;
 import stp.gateway.Server;
 import stp.message.Message;
-import stp.system.STPConstants;
 import stp.system.STPException;
 import stp.system.STPObject;
 
@@ -133,7 +132,7 @@ public class ParserManager extends STPObject {
 		if (contains(message.getType())) {
 			get(message.getType()).read(peer, message);
 		} else {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, STPConstants.EXCEPTION_STR_PARSER_UNKNOWN_TYPE + message.getType());
+			throw new STPException(STPException.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, message.getType());
 		}
 	}
 	
@@ -141,7 +140,7 @@ public class ParserManager extends STPObject {
 		if (contains(message.getType())) {
 			get(message.getType()).written(peer, message);
 		} else {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, STPConstants.EXCEPTION_STR_PARSER_UNKNOWN_TYPE + message.getType());
+			throw new STPException(STPException.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, message.getType());
 		}
 	}
 	
@@ -149,7 +148,7 @@ public class ParserManager extends STPObject {
 		if (contains(message.getType())) {
 			return get(message.getType()).willRead(message);
 		} else {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, STPConstants.EXCEPTION_STR_PARSER_UNKNOWN_TYPE + message.getType());
+			throw new STPException(STPException.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, message.getType());
 		}
 	}
 	
@@ -157,7 +156,7 @@ public class ParserManager extends STPObject {
 		if (contains(message.getType())) {
 			return get(message.getType()).willWrite(message);
 		} else {
-			throw new STPException(STPConstants.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, STPConstants.EXCEPTION_STR_PARSER_UNKNOWN_TYPE + message.getType());
+			throw new STPException(STPException.EXCEPTION_CODE_PARSER_UNKNOWN_TYPE, message.getType());
 		}
 	}
 }

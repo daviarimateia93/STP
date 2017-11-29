@@ -23,25 +23,24 @@
 
 package stp.using.server;
 
+import org.apache.log4j.Logger;
+
 import stp.gateway.Server;
 import stp.parser.ParserManager;
 import stp.system.STPException;
-import stp.system.STPLogger;
 
 public class STPServer {
+	
+	private static final Logger logger = Logger.getLogger(STPServer.class);
 	
 	public static final int DEFAULT_PORT = 8888;
 	
 	public static void main(final String[] args) {
 		int port = DEFAULT_PORT;
 		
-		if (args != null) {
-			if (args.length == 1) {
-				port = Integer.valueOf(args[0]);
-			}
+		if (args != null && args.length == 1) {
+			port = Integer.valueOf(args[0]);
 		}
-		
-		STPLogger.welcomeSTP();
 		
 		try {
 			final Server server = new Server();
@@ -51,7 +50,7 @@ public class STPServer {
 			
 			server.start(port);
 		} catch (final STPException exception) {
-			STPLogger.exception(exception);
+			logger.error(exception);
 		}
 	}
 }

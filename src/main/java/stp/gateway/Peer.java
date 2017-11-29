@@ -8,15 +8,18 @@ import java.net.UnknownHostException;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.apache.log4j.Logger;
+
 import stp.parser.ParserManager;
 import stp.system.STPConstants;
 import stp.system.STPException;
-import stp.system.STPLogger;
 import stp.system.STPObject;
 import stp.system.STPSecurityHelper;
 import stp.transporter.Transporter;
 
 public class Peer extends STPObject {
+	
+	private static final Logger logger = Logger.getLogger(Peer.class);
 	
 	private Transporter transporter;
 	private Socket socket;
@@ -56,7 +59,7 @@ public class Peer extends STPObject {
 	
 	public void start(final String host, final int port, final InputStream certificateInputStream, final String certificatePassword) throws STPException {
 		if (!started) {
-			STPLogger.info(STPConstants.PEER_PREPARING_TO_CONNECT);
+			logger.info(STPConstants.PEER_PREPARING_TO_CONNECT);
 			
 			try {
 				try {
@@ -73,12 +76,12 @@ public class Peer extends STPObject {
 					
 					hasStarted();
 				} catch (final UnknownHostException exception) {
-					throw new STPException(STPConstants.EXCEPTION_CODE_UNKNOWN_HOST_EXCEPTION, exception.getMessage());
+					throw new STPException(STPException.EXCEPTION_CODE_UNKNOWN_HOST_EXCEPTION, exception);
 				} catch (final IOException exception) {
-					throw new STPException(STPConstants.EXCEPTION_CODE_SOCKET_EXCEPTION, exception.getMessage());
+					throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
 				}
 			} catch (final STPException exception) {
-				STPLogger.exception(exception);
+				logger.error(exception);
 				
 				end();
 				
@@ -92,9 +95,9 @@ public class Peer extends STPObject {
 			try {
 				socket.close();
 			} catch (final IOException exception) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_SOCKET_EXCEPTION, exception.getMessage());
+				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
 			} catch (final Exception exception) {
-				throw new STPException(STPConstants.EXCEPTION_CODE_GENERAL_EXCEPTION, exception.getMessage());
+				throw new STPException(exception);
 			} finally {
 				hasEnded();
 			}
@@ -115,7 +118,7 @@ public class Peer extends STPObject {
 		
 		started = true;
 		
-		STPLogger.info(STPConstants.PEER_CONNECTED_SUCCESSFULLY);
+		logger.info(STPConstants.PEER_CONNECTED_SUCCESSFULLY);
 		
 		ParserManager.getInstance().onPeerStart(this);
 		
@@ -129,7 +132,7 @@ public class Peer extends STPObject {
 	private void hasEnded() {
 		started = false;
 		
-		STPLogger.info(STPConstants.PEER_CONNECTION_ENDED);
+		logger.info(STPConstants.PEER_CONNECTION_ENDED);
 		
 		ParserManager.getInstance().onPeerEnd(this);
 		

@@ -50,17 +50,14 @@ public abstract class STPSecurityHelper {
 			sslContext.init(null, trustManagers, null);
 			
 			return sslContext;
-		} catch (final KeyManagementException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final NoSuchAlgorithmException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
+		} catch (final KeyManagementException | NoSuchAlgorithmException exception) {
+			throw new STPException(STPException.EXCEPTION_CODE_SECURITY_EXCEPTION, exception);
 		}
 	}
 	
 	public static SSLContext getSSLContextForCertificate(final InputStream certificateInputStream, final String certificatePassword) throws STPException {
 		try {
 			final CertificateFactory certificateFactory = CertificateFactory.getInstance(CERTIFICATE_TYPE);
-			
 			final X509Certificate x509Certificate = (X509Certificate) certificateFactory.generateCertificate(certificateInputStream);
 			
 			TrustManager[] trustManagers = new TrustManager[] { new X509TrustManager() {
@@ -90,12 +87,8 @@ public abstract class STPSecurityHelper {
 			sslContext.init(null, trustManagers, null);
 			
 			return sslContext;
-		} catch (final NoSuchAlgorithmException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final CertificateException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final KeyManagementException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
+		} catch (final NoSuchAlgorithmException | CertificateException | KeyManagementException exception) {
+			throw new STPException(STPException.EXCEPTION_CODE_SECURITY_EXCEPTION, exception);
 		}
 	}
 	
@@ -117,18 +110,8 @@ public abstract class STPSecurityHelper {
 			sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, null);
 			
 			return sslContext;
-		} catch (final IOException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final KeyStoreException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final UnrecoverableKeyException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final NoSuchAlgorithmException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final CertificateException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
-		} catch (final KeyManagementException exception) {
-			throw new STPException(STPConstants.EXCEPTION_CODE_SECURITY_EXCEPTION, exception.getMessage());
+		} catch (final IOException | KeyStoreException | UnrecoverableKeyException | NoSuchAlgorithmException | CertificateException | KeyManagementException exception) {
+			throw new STPException(STPException.EXCEPTION_CODE_SECURITY_EXCEPTION, exception);
 		}
 	}
 }
