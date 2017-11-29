@@ -13,7 +13,6 @@ import javax.net.ssl.SSLServerSocketFactory;
 import org.apache.log4j.Logger;
 
 import stp.parser.ParserManager;
-import stp.system.STPConstants;
 import stp.system.STPException;
 import stp.system.STPObject;
 import stp.system.STPSecurityHelper;
@@ -21,6 +20,9 @@ import stp.system.STPSecurityHelper;
 public class Server extends STPObject {
 	
 	private static final Logger logger = Logger.getLogger(Server.class);
+
+	public static final String SERVER_HAS_BEEN_STARTED = "Server - has been started";
+	public static final String SERVER_HAS_BEEN_ENDED = "Server - has been ended";
 	
 	private ServerSocket serverSocket;
 	private final ArrayList<Peer> connectedPeers = new ArrayList<>();
@@ -53,7 +55,7 @@ public class Server extends STPObject {
 				
 				started = true;
 				
-				logger.info(STPConstants.SERVER_HAS_BEEN_STARTED);
+				logger.info(SERVER_HAS_BEEN_STARTED);
 				
 				ParserManager.getInstance().onServerStart(this);
 				
@@ -93,7 +95,7 @@ public class Server extends STPObject {
 			} finally {
 				started = false;
 				
-				logger.info(STPConstants.SERVER_HAS_BEEN_ENDED);
+				logger.info(SERVER_HAS_BEEN_ENDED);
 				
 				ParserManager.getInstance().onServerEnd(this);
 				

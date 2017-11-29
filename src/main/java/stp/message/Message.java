@@ -4,10 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import stp.system.STPConstants;
 import stp.system.STPObject;
+import stp.transporter.Transporter;
 
 public class Message extends STPObject {
+	
+	public static final int MSG_MAX_SIZE = 512 + Transporter.PAYLOAD_MAX_SIZE;
+	public static final int MSG_ID_LENGTH = 36;
+	public static final String MSG_TAG = "MSG";
 	
 	private String tag;
 	private String id;
@@ -19,7 +23,7 @@ public class Message extends STPObject {
 	}
 	
 	public Message(final String type, final String id, final Payload payload) {
-		tag = STPConstants.MSG_TAG;
+		tag = MSG_TAG;
 		this.id = id == null ? generateId() : id;
 		this.type = type;
 		this.payload = payload;
@@ -59,16 +63,16 @@ public class Message extends STPObject {
 		
 		stringBuilder.append(getHeader());
 		stringBuilder.append(new String(payload.getContent()));
-		stringBuilder.append(new String(STPConstants.STP_TRAILER));
+		stringBuilder.append(new String(Transporter.STP_TRAILER));
 		
 		return stringBuilder.toString();
 	}
 	
 	public byte[] toBytes() throws IOException {
-		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(STPConstants.MSG_MAX_SIZE);
+		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(MSG_MAX_SIZE);
 		byteArrayOutputStream.write(getHeader().getBytes());
 		byteArrayOutputStream.write(getPayload().getContent());
-		byteArrayOutputStream.write(STPConstants.STP_TRAILER);
+		byteArrayOutputStream.write(Transporter.STP_TRAILER);
 		
 		return byteArrayOutputStream.toByteArray();
 	}

@@ -13,13 +13,28 @@ import stp.gateway.Peer;
 import stp.message.Message;
 import stp.message.Payload;
 import stp.parser.ParserManager;
-import stp.system.STPConstants;
 import stp.system.STPException;
 import stp.system.STPObject;
 
 public class Transporter extends STPObject {
 	
 	private static final Logger logger = Logger.getLogger(Transporter.class);
+	
+	public static final int PAYLOAD_MAX_SIZE = 4096;
+	public static final int MSG_ID_LENGTH = 36;
+	public static final int STP_HEADER_PIECES_LENGTH = 6;
+	public static final int STP_HEADER_INDEX_TAG = 0;
+	public static final int STP_HEADER_INDEX_TYPE = 1;
+	public static final int STP_HEADER_INDEX_ID = 2;
+	public static final int STP_HEADER_INDEX_PAYLOAD_POSITION = 3;
+	public static final int STP_HEADER_INDEX_PAYLOAD_CONTENT_LENGTH = 4;
+	public static final int STP_HEADER_INDEX_PAYLOAD_TOTAL_LENGTH = 5;
+	public static final byte[] STP_TRAILER = { 'E', 'N', 'D', '\r', '\n' };
+	public static final String TRANSPORT_PREPARING_TO_SEND_MESSAGE = "Transport - preparing to send message";
+	public static final String TRANSPORT_MESSAGE_SENT = "Transport - sent message";
+	public static final String TRANSPORT_PREPARING_TO_READ_MESSAGE = "Transport - preparing to read message";
+	public static final String TRANSPORT_MESSAGE_READ = "Transport - message read";
+	public static final String TRANSPORT_MESSAGE_IGNORED = "Transport - message ignored";
 	
 	private Peer peer;
 	private Socket socket;
@@ -88,15 +103,15 @@ public class Transporter extends STPObject {
 	
 	public void receive() throws STPException {
 		try {
-			logger.info(STPConstants.TRANSPORT_PREPARING_TO_READ_MESSAGE);
+			logger.info(TRANSPORT_PREPARING_TO_READ_MESSAGE);
 			
 			final String[] header = receiveHeader();
 			
-			final String type = header[STPConstants.STP_HEADER_INDEX_TYPE];
-			final String id = header[STPConstants.STP_HEADER_INDEX_ID];
-			final long payloadPosition = Long.parseLong(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_POSITION]);
-			final int payloadContentLength = Integer.parseInt(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_CONTENT_LENGTH]);
-			final long payloadTotalLength = Long.parseLong(header[STPConstants.STP_HEADER_INDEX_PAYLOAD_TOTAL_LENGTH]);
+			final String type = header[STP_HEADER_INDEX_TYPE];
+			final String id = header[STP_HEADER_INDEX_ID];
+			final long payloadPosition = Long.parseLong(header[STP_HEADER_INDEX_PAYLOAD_POSITION]);
+			final int payloadContentLength = Integer.parseInt(header[STP_HEADER_INDEX_PAYLOAD_CONTENT_LENGTH]);
+			final long payloadTotalLength = Long.parseLong(header[STP_HEADER_INDEX_PAYLOAD_TOTAL_LENGTH]);
 			
 			final byte[] payloadContent = receiveContent(payloadContentLength);
 			
@@ -112,13 +127,13 @@ public class Transporter extends STPObject {
 				
 				validate(message);
 				
-				logger.info(STPConstants.TRANSPORT_MESSAGE_READ);
+				logger.info(TRANSPORT_MESSAGE_READ);
 				
 				ParserManager.getInstance().read(peer, message);
 				
 				receivingMessage = null;
 			} else {
-				logger.info(STPConstants.TRANSPORT_MESSAGE_IGNORED);
+				logger.info(TRANSPORT_MESSAGE_IGNORED);
 			}
 		} catch (final STPException exception) {
 			switch (exception.getCode()) {
@@ -169,7 +184,7 @@ public class Transporter extends STPObject {
 	
 	public synchronized void sendSync(final Message message) throws STPException {
 		try {
-			logger.info(STPConstants.TRANSPORT_PREPARING_TO_SEND_MESSAGE);
+			logger.info(TRANSPORT_PREPARING_TO_SEND_MESSAGE);
 			
 			final Message newMessage = ParserManager.getInstance().prepareWriting(message);
 			
@@ -180,13 +195,13 @@ public class Transporter extends STPObject {
 				
 				write(newMessage.toBytes());
 				
-				logger.info(STPConstants.TRANSPORT_MESSAGE_SENT);
+				logger.info(TRANSPORT_MESSAGE_SENT);
 				
 				ParserManager.getInstance().written(peer, newMessage);
 				
 				sendingMessage = null;
 			} else {
-				logger.info(STPConstants.TRANSPORT_MESSAGE_IGNORED);
+				logger.info(TRANSPORT_MESSAGE_IGNORED);
 			}
 		} catch (final STPException exception) {
 			switch (exception.getCode()) {
@@ -300,16 +315,16 @@ public class Transporter extends STPObject {
 	}
 	
 	private void receiveTrailer() throws STPException {
-		final byte[] trailer = new byte[STPConstants.STP_TRAILER.length];
+		final byte[] trailer = new byte[STP_TRAILER.length];
 		
-		final int readSize = read(trailer, 0, STPConstants.STP_TRAILER.length);
+		final int readSize = read(trailer, 0, STP_TRAILER.length);
 		
 		if (readSize == -1) {
 			throw new STPException(STPException.EXCEPTION_CODE_PEER_CONNECTION_CLOSED);
 		}
 		
-		for (int i = 0; i < STPConstants.STP_TRAILER.length; i++) {
-			if (trailer[i] != STPConstants.STP_TRAILER[i]) {
+		for (int i = 0; i < STP_TRAILER.length; i++) {
+			if (trailer[i] != STP_TRAILER[i]) {
 				throw new STPException(STPException.EXCEPTION_CODE_TRAILER_INVALID_CONTENT);
 			}
 		}
@@ -338,7 +353,7 @@ public class Transporter extends STPObject {
 			throw new STPException(STPException.EXCEPTION_CODE_MESSAGE_NULL_PAYLOAD);
 		}
 		
-		if (message.getId().length() != STPConstants.MSG_ID_LENGTH) {
+		if (message.getId().length() != Message.MSG_ID_LENGTH) {
 			throw new STPException(STPException.EXCEPTION_CODE_MESSAGE_INVALID_ID);
 		}
 		
@@ -364,7 +379,7 @@ public class Transporter extends STPObject {
 			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_INVALID_POSITION);
 		}
 		
-		if (payload.getLength() < 0 || payload.getLength() > STPConstants.PAYLOAD_MAX_SIZE || payload.getTotalLength() > STPConstants.PAYLOAD_MAX_SIZE) {
+		if (payload.getLength() < 0 || payload.getLength() > PAYLOAD_MAX_SIZE || payload.getTotalLength() > PAYLOAD_MAX_SIZE) {
 			throw new STPException(STPException.EXCEPTION_CODE_PAYLOAD_INVALID_LENGTH);
 		}
 		
@@ -388,7 +403,7 @@ public class Transporter extends STPObject {
 			}
 		}
 		
-		if (headerPieces.length != piecesQuantity || piecesQuantity != STPConstants.STP_HEADER_PIECES_LENGTH) {
+		if (headerPieces.length != piecesQuantity || piecesQuantity != STP_HEADER_PIECES_LENGTH) {
 			throw new STPException(STPException.EXCEPTION_CODE_HEADER_INVALID_FORMAT);
 		}
 	}

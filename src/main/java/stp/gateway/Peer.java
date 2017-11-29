@@ -11,7 +11,6 @@ import javax.net.ssl.SSLSocketFactory;
 import org.apache.log4j.Logger;
 
 import stp.parser.ParserManager;
-import stp.system.STPConstants;
 import stp.system.STPException;
 import stp.system.STPObject;
 import stp.system.STPSecurityHelper;
@@ -20,6 +19,10 @@ import stp.transporter.Transporter;
 public class Peer extends STPObject {
 	
 	private static final Logger logger = Logger.getLogger(Peer.class);
+	
+	public static final String PEER_PREPARING_TO_CONNECT = "Peer - preparing to connect";
+	public static final String PEER_CONNECTED_SUCCESSFULLY = "Peer - connected successfully";
+	public static final String PEER_CONNECTION_ENDED = "Peer - connection ended";
 	
 	private Transporter transporter;
 	private Socket socket;
@@ -59,7 +62,7 @@ public class Peer extends STPObject {
 	
 	public void start(final String host, final int port, final InputStream certificateInputStream, final String certificatePassword) throws STPException {
 		if (!started) {
-			logger.info(STPConstants.PEER_PREPARING_TO_CONNECT);
+			logger.info(PEER_PREPARING_TO_CONNECT);
 			
 			try {
 				try {
@@ -118,7 +121,7 @@ public class Peer extends STPObject {
 		
 		started = true;
 		
-		logger.info(STPConstants.PEER_CONNECTED_SUCCESSFULLY);
+		logger.info(PEER_CONNECTED_SUCCESSFULLY);
 		
 		ParserManager.getInstance().onPeerStart(this);
 		
@@ -132,7 +135,7 @@ public class Peer extends STPObject {
 	private void hasEnded() {
 		started = false;
 		
-		logger.info(STPConstants.PEER_CONNECTION_ENDED);
+		logger.info(PEER_CONNECTION_ENDED);
 		
 		ParserManager.getInstance().onPeerEnd(this);
 		
