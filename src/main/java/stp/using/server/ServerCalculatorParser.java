@@ -1,10 +1,10 @@
 package stp.using.server;
 
+import stp.core.STPException;
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.message.Payload;
 import stp.parser.Parser;
-import stp.system.STPException;
 
 public class ServerCalculatorParser extends Parser {
 	

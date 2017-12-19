@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import stp.system.STPObject;
+import stp.core.STPObject;
 import stp.transporter.Transporter;
 
 public class Message extends STPObject {

@@ -12,10 +12,10 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.log4j.Logger;
 
+import stp.core.STPException;
+import stp.core.STPObject;
+import stp.core.STPSecurityHelper;
 import stp.parser.ParserManager;
-import stp.system.STPException;
-import stp.system.STPObject;
-import stp.system.STPSecurityHelper;
 
 public class Server extends STPObject {
 	
@@ -67,6 +67,8 @@ public class Server extends STPObject {
 					new Peer(socket, this);
 				}
 			} catch (final IOException exception) {
+				logger.error(exception);
+				
 				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
 			} catch (final STPException exception) {
 				logger.error(exception);
@@ -104,22 +106,6 @@ public class Server extends STPObject {
 		}
 	}
 	
-	protected void onStart() {
-		
-	}
-	
-	protected void onEnd() {
-		
-	}
-	
-	protected void onPeerStart(final Peer peer) {
-		
-	}
-	
-	protected void onPeerEnd(final Peer peer) {
-		
-	}
-	
 	void peerHasStarted(final Peer peer) {
 		connectedPeers.add(peer);
 		
@@ -134,5 +120,21 @@ public class Server extends STPObject {
 		ParserManager.getInstance().onPeerEnd(this, peer);
 		
 		onPeerEnd(peer);
+	}
+	
+	protected void onStart() {
+		// Can be overridden
+	}
+	
+	protected void onEnd() {
+		// Can be overridden
+	}
+	
+	protected void onPeerStart(final Peer peer) {
+		// Can be overridden
+	}
+	
+	protected void onPeerEnd(final Peer peer) {
+		// Can be overridden
 	}
 }

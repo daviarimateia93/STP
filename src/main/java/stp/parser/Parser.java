@@ -1,8 +1,8 @@
 package stp.parser;
 
+import stp.core.STPObject;
 import stp.gateway.Peer;
 import stp.message.Message;
-import stp.system.STPObject;
 
 public abstract class Parser extends STPObject {
 	

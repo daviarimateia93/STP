@@ -1,6 +1,6 @@
 package stp.message;
 
-import stp.system.STPObject;
+import stp.core.STPObject;
 
 public class Payload extends STPObject {
 	

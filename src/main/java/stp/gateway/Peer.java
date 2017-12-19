@@ -10,10 +10,10 @@ import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.log4j.Logger;
 
+import stp.core.STPException;
+import stp.core.STPObject;
+import stp.core.STPSecurityHelper;
 import stp.parser.ParserManager;
-import stp.system.STPException;
-import stp.system.STPObject;
-import stp.system.STPSecurityHelper;
 import stp.transporter.Transporter;
 
 public class Peer extends STPObject {
@@ -65,30 +65,28 @@ public class Peer extends STPObject {
 			logger.info(PEER_PREPARING_TO_CONNECT);
 			
 			try {
-				try {
-					if (certificateInputStream != null) {
-						final SSLSocketFactory sslSocketFactory = STPSecurityHelper.getSSLContextForCertificate(certificateInputStream, certificatePassword).getSocketFactory();
-						
-						final SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port);
-						sslSocket.startHandshake();
-						
-						socket = sslSocket;
-					} else {
-						socket = new Socket(host, port);
-					}
+				if (certificateInputStream != null) {
+					final SSLSocketFactory sslSocketFactory = STPSecurityHelper.getSSLContextForCertificate(certificateInputStream, certificatePassword).getSocketFactory();
 					
-					hasStarted();
-				} catch (final UnknownHostException exception) {
-					throw new STPException(STPException.EXCEPTION_CODE_UNKNOWN_HOST_EXCEPTION, exception);
-				} catch (final IOException exception) {
-					throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
+					final SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port);
+					sslSocket.startHandshake();
+					
+					socket = sslSocket;
+				} else {
+					socket = new Socket(host, port);
 				}
-			} catch (final STPException exception) {
+				
+				hasStarted();
+			} catch (final UnknownHostException exception) {
 				logger.error(exception);
 				
-				end();
+				throw new STPException(STPException.EXCEPTION_CODE_UNKNOWN_HOST_EXCEPTION, exception);
+			} catch (final IOException exception) {
+				logger.error(exception);
 				
-				throw exception;
+				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
+			} finally {
+				end();
 			}
 		}
 	}
@@ -105,14 +103,6 @@ public class Peer extends STPObject {
 				hasEnded();
 			}
 		}
-	}
-	
-	protected void onStart() {
-		
-	}
-	
-	protected void onEnd() {
-		
 	}
 	
 	private void hasStarted() {
@@ -144,5 +134,13 @@ public class Peer extends STPObject {
 		if (server != null) {
 			server.peerHasEnded(this);
 		}
+	}
+	
+	protected void onStart() {
+		// Can be overridden
+	}
+	
+	protected void onEnd() {
+		// Can be overridden
 	}
 }

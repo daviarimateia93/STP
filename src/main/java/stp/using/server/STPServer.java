@@ -25,9 +25,9 @@ package stp.using.server;
 
 import org.apache.log4j.Logger;
 
+import stp.core.STPException;
 import stp.gateway.Server;
 import stp.parser.ParserManager;
-import stp.system.STPException;
 
 public class STPServer {
 	

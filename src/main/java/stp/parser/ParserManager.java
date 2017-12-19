@@ -1,20 +1,20 @@
 package stp.parser;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import stp.core.STPException;
+import stp.core.STPObject;
 import stp.gateway.Peer;
 import stp.gateway.Server;
 import stp.message.Message;
-import stp.system.STPException;
-import stp.system.STPObject;
 
 public class ParserManager extends STPObject {
 	
 	private static ParserManager instance;
-	protected final Map<String, Parser> parsers = new Hashtable<>();
+	protected final Map<String, Parser> parsers = new HashMap<>();
 	protected final List<ParserPeerKnown> parsersPeerKnown = new ArrayList<>();
 	protected final List<ParserServerKnown> parsersServerKnown = new ArrayList<>();
 	
@@ -57,11 +57,11 @@ public class ParserManager extends STPObject {
 		
 		if (removedParser != null) {
 			if (removedParser instanceof ParserPeerKnown) {
-				parsersPeerKnown.remove(removedParser);
+				parsersPeerKnown.remove((ParserPeerKnown) removedParser);
 			}
 			
 			if (removedParser instanceof ParserServerKnown) {
-				parsersServerKnown.remove(removedParser);
+				parsersServerKnown.remove((ParserServerKnown) removedParser);
 			}
 		}
 	}

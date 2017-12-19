@@ -4,11 +4,11 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
+import stp.core.STPException;
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.message.Payload;
 import stp.parser.ParserManager;
-import stp.system.STPException;
 
 public class STPClient {
 	

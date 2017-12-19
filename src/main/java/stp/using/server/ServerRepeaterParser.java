@@ -1,9 +1,9 @@
 package stp.using.server;
 
+import stp.core.STPException;
 import stp.gateway.Peer;
 import stp.message.Message;
 import stp.parser.Parser;
-import stp.system.STPException;
 
 public class ServerRepeaterParser extends Parser {
 	
