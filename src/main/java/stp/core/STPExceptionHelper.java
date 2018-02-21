@@ -10,6 +10,10 @@ public abstract class STPExceptionHelper {
 	}
 	
 	public static String getStackTraceAsString(final Throwable throwable) {
+		if (throwable == null) {
+			return null;
+		}
+		
 		final StringWriter stringWriter = new StringWriter();
 		final PrintWriter printWriter = new PrintWriter(stringWriter);
 		
