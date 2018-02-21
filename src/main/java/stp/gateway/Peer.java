@@ -80,13 +80,15 @@ public class Peer extends STPObject {
 			} catch (final UnknownHostException exception) {
 				logger.error(exception);
 				
+				end();
+				
 				throw new STPException(STPException.EXCEPTION_CODE_UNKNOWN_HOST_EXCEPTION, exception);
 			} catch (final IOException exception) {
 				logger.error(exception);
 				
-				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
-			} finally {
 				end();
+				
+				throw new STPException(STPException.EXCEPTION_CODE_SOCKET_EXCEPTION, exception);
 			}
 		}
 	}
