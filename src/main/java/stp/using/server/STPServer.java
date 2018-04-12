@@ -30,27 +30,27 @@ import stp.gateway.Server;
 import stp.parser.ParserManager;
 
 public class STPServer {
-	
-	private static final Logger logger = Logger.getLogger(STPServer.class);
-	
-	public static final int DEFAULT_PORT = 8888;
-	
-	public static void main(final String[] args) {
-		int port = DEFAULT_PORT;
-		
-		if (args != null && args.length == 1) {
-			port = Integer.valueOf(args[0]);
-		}
-		
-		try {
-			final Server server = new Server();
-			
-			ParserManager.getInstance().add(new ServerRepeaterParser());
-			ParserManager.getInstance().add(new ServerCalculatorParser());
-			
-			server.start(port);
-		} catch (final STPException exception) {
-			logger.error(exception);
-		}
-	}
+
+    private static final Logger logger = Logger.getLogger(STPServer.class);
+
+    public static final int DEFAULT_PORT = 8888;
+
+    public static void main(final String[] args) {
+        int port = DEFAULT_PORT;
+
+        if (args != null && args.length == 1) {
+            port = Integer.valueOf(args[0]);
+        }
+
+        try {
+            final Server server = new Server();
+
+            ParserManager.getInstance().add(new ServerRepeaterParser());
+            ParserManager.getInstance().add(new ServerCalculatorParser());
+
+            server.start(port);
+        } catch (final STPException exception) {
+            logger.error(exception);
+        }
+    }
 }
